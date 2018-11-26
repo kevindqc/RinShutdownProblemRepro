@@ -21,6 +21,11 @@ namespace RinShutdownProblemRepro
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .ConfigureServices(services => services.AddAutofac())
+                .ConfigureLogging(configure =>
+                {
+                    // Add: Enable Rin Logger
+                    configure.UseRinLogger();
+                })
                 .UseStartup<Startup>();
     }
 }

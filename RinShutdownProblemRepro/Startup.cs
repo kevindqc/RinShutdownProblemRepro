@@ -26,7 +26,12 @@ namespace RinShutdownProblemRepro
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services
+                .AddMvc()
+                .AddRinMvcSupport()
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+
+            services.AddRin();
         }
 
         public void ConfigureContainer(ContainerBuilder builder)
@@ -39,7 +44,16 @@ namespace RinShutdownProblemRepro
         {
             if (env.IsDevelopment())
             {
+                // Add: Enable request/response recording and serve a inspector frontend.
+                // Important: `UseRin` (Middlewares) must be top of the HTTP pipeline.
+                app.UseRin();
+
+                app.UseRinMvcSupport();
+
                 app.UseDeveloperExceptionPage();
+
+                // Add: Enable Exception recorder. this handler must be after `UseDeveloperExceptionPage`.
+                app.UseRinDiagnosticsHandler();
             }
             else
             {
